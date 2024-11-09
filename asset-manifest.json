@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/scrabble/static/css/main.b43e19c0.css",
+    "main.js": "/scrabble/static/js/main.e6d11839.js",
+    "static/media/words.txt": "/scrabble/static/media/words.9bf418a2661895000f62.txt",
+    "static/media/info icon.png": "/scrabble/static/media/info icon.82c90b46274d7dc674f1.png",
+    "index.html": "/scrabble/index.html",
+    "main.b43e19c0.css.map": "/scrabble/static/css/main.b43e19c0.css.map",
+    "main.e6d11839.js.map": "/scrabble/static/js/main.e6d11839.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b43e19c0.css",
+    "static/js/main.e6d11839.js"
+  ]
+}
