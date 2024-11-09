@@ -1,4 +1,4 @@
-#!/Users/nkossally/Desktop/scrabble/api/venv/bin/python3
+#!/Users/nkossally/Documents/GitHub/scrabble/api/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
