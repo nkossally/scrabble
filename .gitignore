@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.idea/
+scrabble_words_complete.txt
+__pycache__/
+demo.py
