@@ -22,6 +22,7 @@ import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import classNames from "classnames";
 
 import "./styles.scss";
+import { kebabCase } from "lodash";
 
 const resetButtonStyle = {
   "text-transform": "uppercase",
@@ -60,6 +61,22 @@ const App = () => {
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices
   );
+  const [input1, setInput1] = useState(0)
+  const [input2, setInput2] = useState(0)
+  const [input3, setInput3] = useState("")
+
+  const handleInput1 = e =>{
+    const val = e.target.value
+    setInput1(val[val.length - 1])
+  }
+  const handleInput2 = e =>{
+    const val = e.target.value
+    setInput2(val[val.length - 1])
+  }
+  const handleInput3 = e =>{
+    const val = e.target.value
+    setInput3(val[val.length - 1])
+  }
 
   const dispatch = useDispatch();
 
@@ -148,9 +165,33 @@ const App = () => {
   }
   
   const testBackend = async () =>{
-    const resp = await fetch("/time");
-    const json = await resp.json()
-    console.log( json)
+    // const resp = await fetch("/time");
+    // const json = await resp.json()
+    // console.log( json)
+    // const resp2= await fetch("/dawg");
+    // const json2= await resp2.json()
+    // console.log( json2)
+
+    // const resp3= await fetch("/game");
+    // const json3= await resp3.json()
+    // console.log( json3)
+    // const resp4= await fetch("/blarg");
+    // const json4= await resp4.json()
+    // console.log( json4)
+
+    // const resp5 = await fetch("/blarg2", {
+    //   method: "POST",
+    //   body: JSON.stringify({row: 1, col: 1, letter: "A"}),
+    // });
+    const resp5 = await fetch("/blarg2", {
+      method: "POST",
+      body: JSON.stringify({row: parseInt(input1), col: parseInt(input2), letter: input3}),
+      headers:{
+        "Content-Type": "application/json"
+      }
+    });
+    const json5= await resp5.json()
+    console.log( json5)
   }
 
   return (
@@ -180,6 +221,10 @@ const App = () => {
       {isGameOver ? <GameOverModal text={gameOverText} /> : ""}
       <div className="player-row">
         <Hand />
+        <input value={input1} onChange={handleInput1}></input>
+        <input value={input2} onChange={handleInput2}></input>
+        <input value={input3} onChange={handleInput3}></input>
+
         <button onClick={testBackend}>buttony</button>
         <div>
           <Button

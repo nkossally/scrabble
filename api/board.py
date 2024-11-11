@@ -336,6 +336,9 @@ class ScrabbleBoard:
             [print(square, end="  ") for square in row]
             print()
         print()
+    
+    def insert_letter(self, row, col, letter):
+        self.board[row][col].letter = letter
 
     # method to insert words into board by row and column number
     # using 1-based indexing for user input
@@ -501,6 +504,11 @@ class ScrabbleBoard:
         self.insert_word(self.best_row + 1, self.best_col + 1 - self.dist_from_anchor, self.best_word)
         self.board[7][8].modifier = ""
         self.word_score_dict[self.best_word] = self.highest_score
+        print('word_rack')
+        print(word_rack)
+        print(self.best_word)
+        print(self.best_row)
+        print(self.best_col)
 
         for letter in self.letters_from_rack:
             if letter in word_rack:

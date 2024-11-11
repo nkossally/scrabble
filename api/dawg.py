@@ -1,5 +1,5 @@
 import pickle
-
+from flask import Flask
 
 def build_trie(lexicon):
     num_nodes = 1
@@ -149,12 +149,17 @@ def find_in_dawg(word, curr_node):
     else:
         return False
 
+# app = Flask(__name__)
 
-if __name__ == "__main__":
-    big_list = open("lexicon/scrabble_words_complete.txt", "r").readlines()
-    big_list = [word.strip("\n") for word in big_list]
-    build_trie(big_list)
-    root = build_dawg(big_list)
-    file_handler = open("lexicon/scrabble_words_complete.pickle", "wb")
-    pickle.dump(root, file_handler)
-    file_handler.close()
+# @app.route('/dawg')
+# def get_dawg():
+# # if __name__ == "__main__":
+#     big_list = open("lexicon/scrabble_words_complete.txt", "r").readlines()
+#     big_list = [word.strip("\n") for word in big_list]
+#     build_trie(big_list)
+#     root = build_dawg(big_list)
+#     file_handler = open("lexicon/scrabble_words_complete.pickle", "wb")
+#     pickle.dump(root, file_handler)
+#     file_handler.close()
+#     return {'root': 'big_list'}
+
