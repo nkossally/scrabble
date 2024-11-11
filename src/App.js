@@ -168,13 +168,13 @@ const App = () => {
     // const resp = await fetch("/time");
     // const json = await resp.json()
     // console.log( json)
-    // const resp2= await fetch("/dawg");
-    // const json2= await resp2.json()
-    // console.log( json2)
+    const resp2= await fetch("/start");
+    const json2= await resp2.json()
+    console.log( json2)
 
-    // const resp3= await fetch("/game");
-    // const json3= await resp3.json()
-    // console.log( json3)
+    const resp3= await fetch("/get-computer-first-move");
+    const json3= await resp3.json()
+    console.log( json3)
     // const resp4= await fetch("/blarg");
     // const json4= await resp4.json()
     // console.log( json4)
@@ -183,15 +183,15 @@ const App = () => {
     //   method: "POST",
     //   body: JSON.stringify({row: 1, col: 1, letter: "A"}),
     // });
-    const resp5 = await fetch("/blarg2", {
-      method: "POST",
-      body: JSON.stringify({row: parseInt(input1), col: parseInt(input2), letter: input3}),
-      headers:{
-        "Content-Type": "application/json"
-      }
-    });
-    const json5= await resp5.json()
-    console.log( json5)
+    // const resp5 = await fetch("/blarg2", {
+    //   method: "POST",
+    //   body: JSON.stringify({row: parseInt(input1), col: parseInt(input2), letter: input3}),
+    //   headers:{
+    //     "Content-Type": "application/json"
+    //   }
+    // });
+    // const json5= await resp5.json()
+    // console.log( json5)
   }
 
   return (

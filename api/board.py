@@ -126,6 +126,19 @@ class ScrabbleBoard:
         self.upper_cross_check = []
         self.lower_cross_check = []
 
+        self.tile_bag = ["A"] * 9 + ["B"] * 2 + ["C"] * 2 + ["D"] * 4 + ["E"] * 12 + ["F"] * 2 + ["G"] * 3 + \
+            ["H"] * 2 + ["I"] * 9 + ["J"] * 1 + ["K"] * 1 + ["L"] * 4 + ["M"] * 2 + ["N"] * 6 + \
+            ["O"] * 8 + ["P"] * 2 + ["Q"] * 1 + ["R"] * 6 + ["S"] * 4 + ["T"] * 6 + ["U"] * 4 + \
+            ["V"] * 2 + ["W"] * 2 + ["X"] * 1 + ["Y"] * 2 + ["Z"] * 1 + ["%"] * 2
+
+
+        self.computer_word_rack = random.sample(self.tile_bag, 7)
+        [self.tile_bag.remove(letter) for letter in  self.computer_word_rack]
+
+        self.player_word_rack = random.sample(self.tile_bag, 7)
+        [self.tile_bag.remove(letter) for letter in  self.player_word_rack]
+        
+
     # transpose method that modifies self.board inplace
     def _transpose(self):
         # https://datagy.io/python-transpose-list-of-lists/
@@ -488,9 +501,10 @@ class ScrabbleBoard:
 
         return word_rack
 
-    def get_start_move(self, word_rack):
+    def get_start_move(self):
         # board symmetrical at start so just always play the start move horizontally
         # try every letter in rack as possible anchor square
+        word_rack = self.computer_word_rack
         self.best_row = 7
         self.best_col = 8
         for i, letter in enumerate(word_rack):
@@ -514,7 +528,7 @@ class ScrabbleBoard:
             if letter in word_rack:
                 word_rack.remove(letter)
 
-        return word_rack
+        return {'word_rack': word_rack, 'row': self.best_row, 'col': self.best_col - self.dist_from_anchor, 'word': self.best_word}
 
 
 # returns a list of all words played on the board
@@ -568,7 +582,7 @@ def play_game():
     word_rack = random.sample(tile_bag, 7)
     [tile_bag.remove(letter) for letter in word_rack]
     game = ScrabbleBoard(root)
-    word_rack = game.get_start_move(word_rack)
+    word_rack = game.get_start_move()
     score += game.highest_score
     word_rack, new_letters = refill_word_rack(word_rack, tile_bag)
     [tile_bag.remove(letter) for letter in new_letters]
