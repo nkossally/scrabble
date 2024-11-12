@@ -129,7 +129,7 @@ class ScrabbleBoard:
         self.tile_bag = ["A"] * 9 + ["B"] * 2 + ["C"] * 2 + ["D"] * 4 + ["E"] * 12 + ["F"] * 2 + ["G"] * 3 + \
             ["H"] * 2 + ["I"] * 9 + ["J"] * 1 + ["K"] * 1 + ["L"] * 4 + ["M"] * 2 + ["N"] * 6 + \
             ["O"] * 8 + ["P"] * 2 + ["Q"] * 1 + ["R"] * 6 + ["S"] * 4 + ["T"] * 6 + ["U"] * 4 + \
-            ["V"] * 2 + ["W"] * 2 + ["X"] * 1 + ["Y"] * 2 + ["Z"] * 1 + ["%"] * 2
+            ["V"] * 2 + ["W"] * 2 + ["X"] * 1 + ["Y"] * 2 + ["Z"] * 1
 
 
         self.computer_word_rack = random.sample(self.tile_bag, 7)
@@ -138,6 +138,14 @@ class ScrabbleBoard:
         self.player_word_rack = random.sample(self.tile_bag, 7)
         [self.tile_bag.remove(letter) for letter in  self.player_word_rack]
         
+    def get_tiles(self):
+        return self.tile_bag
+
+    def get_player_hand(self):
+        return self.player_word_rack
+
+    def get_computer_hand(self):
+        return self.computer_word_rack
 
     # transpose method that modifies self.board inplace
     def _transpose(self):
@@ -574,7 +582,7 @@ def play_game():
     tile_bag = ["A"] * 9 + ["B"] * 2 + ["C"] * 2 + ["D"] * 4 + ["E"] * 12 + ["F"] * 2 + ["G"] * 3 + \
                ["H"] * 2 + ["I"] * 9 + ["J"] * 1 + ["K"] * 1 + ["L"] * 4 + ["M"] * 2 + ["N"] * 6 + \
                ["O"] * 8 + ["P"] * 2 + ["Q"] * 1 + ["R"] * 6 + ["S"] * 4 + ["T"] * 6 + ["U"] * 4 + \
-               ["V"] * 2 + ["W"] * 2 + ["X"] * 1 + ["Y"] * 2 + ["Z"] * 1 + ["%"] * 2
+               ["V"] * 2 + ["W"] * 2 + ["X"] * 1 + ["Y"] * 2 + ["Z"] * 1
 
     to_load = open("lexicon/scrabble_words_complete.pickle", "rb")
     root = pickle.load(to_load)

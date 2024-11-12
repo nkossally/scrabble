@@ -217,5 +217,30 @@ def start_game():
 def computer_make_start_move():
     to_load = open("lexicon/game.pickle", "rb")
     game = pickle.load(to_load)
+    to_load.close()
     result = game.get_start_move()
+    return {'result': result}
+
+@app.route('/get-tiles')
+def get_tiles():
+    to_load = open("lexicon/game.pickle", "rb")
+    game = pickle.load(to_load)
+    to_load.close()
+    result = game.get_tiles()
+    return {'result': result}
+
+@app.route('/get-computer-hand')
+def get_computer_hand():
+    to_load = open("lexicon/game.pickle", "rb")
+    game = pickle.load(to_load)
+    to_load.close()
+    result = game.get_computer_hand()
+    return {'result': result}
+
+@app.route('/get-player-hand')
+def get_player_hand():
+    to_load = open("lexicon/game.pickle", "rb")
+    game = pickle.load(to_load)
+    to_load.close()
+    result = game.get_player_hand()
     return {'result': result}

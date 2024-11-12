@@ -172,13 +172,18 @@ const App = () => {
     const json2= await resp2.json()
     console.log( json2)
 
-    const resp3= await fetch("/get-computer-first-move");
-    const json3= await resp3.json()
-    console.log( json3)
-    // const resp4= await fetch("/blarg");
-    // const json4= await resp4.json()
-    // console.log( json4)
-
+    // const resp3= await fetch("/get-computer-first-move");
+    // const json3= await resp3.json()
+    // console.log( json3)
+    const resp4= await fetch("/get-tiles");
+    const json4= await resp4.json()
+    console.log( json4)
+    const resp6= await fetch("/get-computer-hand");
+    const json6= await resp6.json()
+    console.log( json6)
+    const resp7= await fetch("/get-player-hand");
+    const json7= await resp7.json()
+    console.log( json7)
     // const resp5 = await fetch("/blarg2", {
     //   method: "POST",
     //   body: JSON.stringify({row: 1, col: 1, letter: "A"}),
