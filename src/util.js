@@ -4,7 +4,6 @@ import {
   MID_IDX,
   ANIMATION_DURATION,
   DIRS,
-  LETTER_COUNTS,
 } from "./consts";
 import { removeDumpSelections } from "./reducers/selectedForDumpingHandIndicesSlice";
 import { modifyHand } from "./reducers/handSlice";
@@ -18,6 +17,7 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
+import { setUpGame, getComputerFirstMove } from "./api";
 
 const getIsValidWord = (word, dictionaryTrie) => {
   let i = 0;
@@ -124,14 +124,12 @@ export const pass =
     dispatch(setIsComputersTurn(true));
   };
 
-export const startGame = (dispatch, hand, boardValues, tempBoardValues) => {
-  let letters = [];
-  Object.keys(LETTER_COUNTS).forEach((letter) => {
-    for (let i = 0; i < LETTER_COUNTS[letter]; i++) {
-      letters.push(letter);
-    }
-  });
-  letters = shuffle(letters);
+export const startGame = async (dispatch, hand, boardValues, tempBoardValues) => {
+  const resp = await setUpGame();
+  const tiles = resp["tiles"]
+  const computerHand = resp["computer_hand"]
+  const playerHand = resp["player_hand"]
+
   removeAllTempLetters(
     /** putBackInHand */ false,
     dispatch,
@@ -139,9 +137,9 @@ export const startGame = (dispatch, hand, boardValues, tempBoardValues) => {
     tempBoardValues
   );
   removeAllLetters(dispatch, boardValues);
-  dispatch(modifyHand(letters.slice(0, 7)));
-  dispatch(modifyComputerHand(letters.slice(7, 14)));
-  dispatch(modifyLettersLeft(letters.slice(14)));
+  dispatch(modifyHand(playerHand));
+  dispatch(modifyComputerHand(computerHand));
+  dispatch(modifyLettersLeft(tiles));
   dispatch(updateComputerScore(0));
   dispatch(updateScore(0));
 };
@@ -1041,30 +1039,32 @@ const handleComputerStepOnEmptyBoard = async (
   lettersLeft,
 ) => {
 
-  const computerHandCopy = Array.from(computerHand);
-  const permWithIndices = getLongestLetterAndIndexArr(
-    computerHand,
-    localDictionary
-  );
-  const perm = permWithIndices.map((elem) => elem.letter);
-  const indices = permWithIndices.map((elem) => elem.idx);
-  const word = perm.join("");
+  const resp = await getComputerFirstMove();
+  console.log("resp", resp)
+  const tileBag = resp['tile_bag'];
+  const computerWordRack = resp['computer_word_rack'];
+  const row = resp['row'];
+  const word = resp['word']
+  // const computerWordRackCpy = [...computerWordRack];
+  // const indices = [];
+  // for(let i = 0; i < word.length; i++){
+  //   const idx = computerWordRackCpy.indexOf(word[i])
+  //   indices.push(idx);
+  //   computerWordRackCpy[i] = "-";
+  // }
 
   let wordScore = 0;
   let multiplier = 1;
-  setSelectedComputerTiles(indices);
-  await delay(1000);
-  setSelectedComputerTiles([]);
-  for (let j = 0; j < perm.length; j++) {
+  // setSelectedComputerTiles(indices);
+  // await delay(1000);
+  // setSelectedComputerTiles([]);
+  for (let j = 0; j < word.length; j++) {
     const letter = word[j];
-    const idx = computerHandCopy.indexOf(letter);
-    computerHandCopy.splice(idx, 1);
-    const firstRow = MID_IDX - Math.ceil((perm.length - 1) / 2);
     const letterScoreObj = calculateScoreFromLetter(
-      firstRow + j,
-      7,
+      row + j,
+      MID_IDX /* middle column */,
       null,
-      perm[j],
+      letter,
       boardValues,
       tempBoardValues,
     );
@@ -1073,22 +1073,18 @@ const handleComputerStepOnEmptyBoard = async (
 
     dispatch(
       addLetterToBoard({
-        row: firstRow + j,
+        row: row + j,
         col: 7,
         letter,
       })
     );
   }
   wordScore *= multiplier;
-  const maybeFifty = perm.length === 7 ? 50 : 0;
+  const maybeFifty = word.length === 7 ? 50 : 0;
   dispatch(updateComputerScore(wordScore + maybeFifty));  
 
-  dispatch(
-    modifyComputerHand(
-      computerHandCopy.concat(lettersLeft.slice(0, word.length))
-    )
-  );
-  dispatch(modifyLettersLeft(lettersLeft.slice(word.length)));
+  dispatch(modifyComputerHand(computerWordRack));
+  dispatch(modifyLettersLeft(tileBag));
   dispatch(setIsComputersTurn(false));
 };
 

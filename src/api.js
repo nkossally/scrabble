@@ -1,4 +1,4 @@
-export const startGame = async () =>{
+export const setUpGame = async () =>{
     try{
         const resp = await fetch("/start");
         const json = await resp.json()

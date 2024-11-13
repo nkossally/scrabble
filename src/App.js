@@ -15,6 +15,7 @@ import {
   handleNewGameClick,
   handleDump,
 } from "./util";
+import { setUpGame } from "./api"
 import { Node } from "./dataStructures";
 
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
@@ -22,7 +23,6 @@ import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
 import classNames from "classnames";
 
 import "./styles.scss";
-import { kebabCase } from "lodash";
 
 const resetButtonStyle = {
   "text-transform": "uppercase",
@@ -130,7 +130,10 @@ const App = () => {
   ]);
 
   useEffect(() => {
-    startGame(dispatch, hand, boardValues, tempBoardValues);
+    const wrapper = async () =>{
+      await  startGame(dispatch, hand, boardValues, tempBoardValues);
+    }
+    wrapper();
     setGameStarted(true);
   }, []);
 

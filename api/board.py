@@ -526,17 +526,18 @@ class ScrabbleBoard:
         self.insert_word(self.best_row + 1, self.best_col + 1 - self.dist_from_anchor, self.best_word)
         self.board[7][8].modifier = ""
         self.word_score_dict[self.best_word] = self.highest_score
-        print('word_rack')
-        print(word_rack)
-        print(self.best_word)
-        print(self.best_row)
-        print(self.best_col)
 
         for letter in self.letters_from_rack:
             if letter in word_rack:
                 word_rack.remove(letter)
 
-        return {'word_rack': word_rack, 'row': self.best_row, 'col': self.best_col - self.dist_from_anchor, 'word': self.best_word}
+        word_rack, new_letters = refill_word_rack(word_rack, self.tile_bag)
+        [self.tile_bag.remove(letter) for letter in new_letters]
+        self.computer_word_rack = word_rack
+
+        print({'computer_word_rack': self.computer_word_rack, 'tile_bag': self.tile_bag, 'row': self.best_row, 'col': self.best_col - self.dist_from_anchor, 'word': self.best_word})
+
+        return {'computer_word_rack': self.computer_word_rack, 'tile_bag': self.tile_bag, 'row': self.best_row, 'col': self.best_col - self.dist_from_anchor, 'word': self.best_word}
 
 
 # returns a list of all words played on the board

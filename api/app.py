@@ -207,11 +207,15 @@ def start_game():
     file_handler.close()
 
     game = ScrabbleBoard(root)
+    computer_hand = game.get_computer_hand()
+    player_hand = game.get_player_hand()
+    tiles = game.get_tiles()
+
     file_handler = open("lexicon/game.pickle", "wb")
     pickle.dump(game, file_handler)
     file_handler.close()
 
-    return {'message': "started game"}
+    return {'player_hand': player_hand, 'computer_hand': computer_hand, 'tiles': tiles}
 
 @app.route('/get-computer-first-move')
 def computer_make_start_move():
@@ -219,7 +223,7 @@ def computer_make_start_move():
     game = pickle.load(to_load)
     to_load.close()
     result = game.get_start_move()
-    return {'result': result}
+    return result
 
 @app.route('/get-tiles')
 def get_tiles():
