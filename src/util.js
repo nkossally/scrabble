@@ -17,7 +17,7 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
-import { setUpGame, getComputerFirstMove } from "./api";
+import { setUpGame, getComputerFirstMove, getBestMove } from "./api";
 
 const getIsValidWord = (word, dictionaryTrie) => {
   let i = 0;
@@ -780,108 +780,75 @@ export const handleComputerStep = async (
     return;
   }
 
-  const permsWithData = [];
-  const allIndices = [];
-  for (let i = 0; i < computerHand.length; i++) {
-    allIndices.push(i);
-  }
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    for (let j = 0; j < BOARD_SIZE; j++) {
-      let leftCol = j - 1;
-      let higherRow = i - 1;
-      if (!(isOnBoard(i, leftCol) && boardValues[i][leftCol])) {
-        lookForValidLettersPermutation(
-          permsWithData,
-          boardValues,
-          computerHand,
-          localDictionary,
-          "",
-          [],
-          [...allIndices],
-          false,
-          i,
-          j,
-          [0, 1],
-          i /* startX*/,
-          j /* startY */
-        );
+  const resp = await getBestMove();
+  console.log("resp", resp)
+  let row = resp["row"];
+  let col = resp["col"];
+  const word = resp["word"];
+  const usedLetters = resp["used_letters"];
+  const tileBag = resp["tile_bag"];
+  const computerWordRack = resp["computer_word_rack"];
+  const isVertical =resp["is_vertical"];
+  console.log(row, col, word, usedLetters, tileBag, computerWordRack);
+
+
+  if (row !== undefined) {
+    let count = 0;
+    while (count < word.length) {
+      if (!boardValues[row][col]) {
+        dispatch(addLetterToBoard({ row, col, letter: word[count] }));
       }
-      if (!(isOnBoard(higherRow, j) && boardValues[higherRow][j])) {
-        lookForValidLettersPermutation(
-          permsWithData,
-          boardValues,
-          computerHand,
-          localDictionary,
-          "",
-          [],
-          [...allIndices],
-          false,
-          i,
-          j,
-          [1, 0],
-          i /* startX*/,
-          j /* startY */
-        );
+      if (isVertical) {
+        row++;
+      } else {
+        col++;
       }
+      count++;
     }
-  }
-
-  let result;
-  permsWithData.sort((a, b) => b[0].length - a[0].length);
-
-  for (let i = 0; i < permsWithData.length; i++) {
-    const elem = permsWithData[i];
-    const permWithIndices = elem[0];
-    const startX = elem[1];
-    const startY = elem[2];
-    const dir = elem[3];
-    const perm = permWithIndices.map((elem) => elem.letter);
-    const indices = permWithIndices.map((elem) => elem.index);
-
-    let virtualBoard;
-
-    const wordAndCoordinates = placeLettersAroundSpot(
-      startX,
-      startY,
-      perm,
-      localDictionary,
-      boardValues,
-      dir
-    );
-    if (wordAndCoordinates) {
-      const coordinates = wordAndCoordinates.coordinates;
-      virtualBoard = buildEmptyBoard();
-      coordinates.forEach((coords, i) => {
-        virtualBoard[coords[0]][coords[1]] = perm[i];
-      });
-      result = await submitWord(
-        virtualBoard,
-        indices,
-        setInvalidWords,
-        dispatch,
-        isComputersTurn,
-        setSelectedComputerTiles,
-        setIsComputersTurn,
-        localDictionary,
-        computerScore,
-        playerScore,
-        computerHand,
-        lettersLeft,
-        hand,
-        boardValues,
-        tempBoardValues,
-      )();
-      if (result) break;
-    }
-  }
-
-  if (!result) {
+  } else {
     setComputerPasses(true);
     setTimeout(() => {
       setComputerPasses(false);
     }, ANIMATION_DURATION);
   }
+
+  let wordScore = 0;
+  let multiplier = 1;
+  row = resp.row;
+  col = resp.col;
+  // setSelectedComputerTiles(indices);
+  // await delay(1000);
+  // setSelectedComputerTiles([]);
+  // for (let j = 0; j < word.length; j++) {
+  //   const letter = word[j];
+  //   const letterScoreObj = calculateScoreFromLetter(
+  //     row + j,
+  //     MID_IDX /* middle column */,
+  //     null,
+  //     letter,
+  //     boardValues,
+  //     tempBoardValues,
+  //   );
+  //   wordScore += letterScoreObj.letterPoints;
+  //   multiplier *= letterScoreObj.wordMultiplier;
+
+  //   dispatch(
+  //     addLetterToBoard({
+  //       row: row + j,
+  //       col: 7,
+  //       letter,
+  //     })
+  //   );
+  // }
+  // wordScore *= multiplier;
+  // const maybeFifty = word.length === 7 ? 50 : 0;
+  // dispatch(updateComputerScore(wordScore + maybeFifty));  
+
+  dispatch(modifyComputerHand(computerWordRack));
+  dispatch(modifyLettersLeft(tileBag));
   dispatch(setIsComputersTurn(false));
+
+  setSelectedComputerTiles([]);
 };
 
 const lookForValidLettersPermutation = (
@@ -1038,6 +1005,7 @@ const handleComputerStepOnEmptyBoard = async (
   const tileBag = resp['tile_bag'];
   const computerWordRack = resp['computer_word_rack'];
   const row = resp['row'];
+  const col = resp['col'];
   const word = resp['word']
   // const computerWordRackCpy = [...computerWordRack];
   // const indices = [];
@@ -1055,8 +1023,8 @@ const handleComputerStepOnEmptyBoard = async (
   for (let j = 0; j < word.length; j++) {
     const letter = word[j];
     const letterScoreObj = calculateScoreFromLetter(
-      row + j,
-      MID_IDX /* middle column */,
+      MID_IDX,
+      col + j,
       null,
       letter,
       boardValues,
@@ -1067,8 +1035,8 @@ const handleComputerStepOnEmptyBoard = async (
 
     dispatch(
       addLetterToBoard({
-        row: row + j,
-        col: 7,
+        row: MID_IDX,
+        col: col + j,
         letter,
       })
     );

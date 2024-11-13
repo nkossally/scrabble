@@ -408,6 +408,9 @@ class ScrabbleBoard:
                     self.lower_cross_check.append((self.board[row + 1][curr_col], letter, row, curr_col))
 
                 curr_col += 1
+            print("inserted")
+            print(self.board[row][curr_col].letter)
+
 
         # place 0 cross-check sentinel at the beginning and end of inserted words to stop accidental overlap.
         # sentinels should only be for the board state opposite from the one the board is currently in
@@ -453,9 +456,9 @@ class ScrabbleBoard:
         self.board[square_row][square_col - 1].letter = None
 
     # scan all tiles on board in both transposed and non-transposed state, find best move
-    def get_best_move(self, word_rack):
+    def get_best_move(self):
 
-        self.word_rack = word_rack
+        word_rack = self.computer_word_rack
 
         # clear out cross-check lists before adding new words
         self._update_cross_checks()
@@ -488,11 +491,12 @@ class ScrabbleBoard:
                         transposed = True
                         self.best_row = row
                         self.best_col = col
+        print("best word", self.best_word)
 
         # Don't try to insert word if we couldn't find one
         if not self.best_word:
             self._transpose()
-            return word_rack
+            return {}
 
         if transposed:
             self.insert_word(self.best_row + 1, self.best_col + 1 - self.dist_from_anchor, self.best_word)
@@ -507,7 +511,14 @@ class ScrabbleBoard:
             if letter in word_rack:
                 word_rack.remove(letter)
 
-        return word_rack
+        word_rack, new_letters = refill_word_rack(word_rack, self.tile_bag)
+        [self.tile_bag.remove(letter) for letter in new_letters]
+        self.computer_word_rack = word_rack
+
+        col = self.best_col - self.dist_from_anchor if not transposed else self.best_row
+        row = self.best_row if not transposed else self.best_col - self.dist_from_anchor
+
+        return {'word': self.best_word, 'computer_word_rack': self.computer_word_rack,'tile_bag': self.tile_bag, 'row': row, 'col': col, 'used_letters': self.letters_from_rack, 'is_vertical': transposed }
 
     def get_start_move(self):
         # board symmetrical at start so just always play the start move horizontally
@@ -598,7 +609,7 @@ def play_game():
 
     play = True
     while play:
-        word_rack = game.get_best_move(word_rack)
+        word_rack = game.get_best_move()
         score += game.highest_score
         word_rack, new_letters = refill_word_rack(word_rack, tile_bag)
         [tile_bag.remove(letter) for letter in new_letters]

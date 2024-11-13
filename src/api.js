@@ -13,3 +13,13 @@ export const getComputerFirstMove = async () => {
     return json;
   } catch {}
 };
+
+export const getBestMove = async () => {
+    try {
+      const resp = await fetch("/get-best-move");
+      const json = await resp.json();
+      console.log("resp in fetch", json)
+      return json;
+    } catch {}
+  };
+  

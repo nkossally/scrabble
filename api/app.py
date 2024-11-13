@@ -223,6 +223,24 @@ def computer_make_start_move():
     game = pickle.load(to_load)
     to_load.close()
     result = game.get_start_move()
+    file_handler = open("lexicon/game.pickle", "wb")
+    pickle.dump(game, file_handler)
+    file_handler.close()
+    game.print_board()
+    return result
+
+@app.route('/get-best-move')
+def get_best_move():
+    to_load = open("lexicon/game.pickle", "rb")
+    game = pickle.load(to_load)
+    to_load.close()
+    result = game.get_best_move()
+    file_handler = open("lexicon/game.pickle", "wb")
+    pickle.dump(game, file_handler)
+    file_handler.close()
+    game.print_board()
+    print("backend result")
+    print(result)
     return result
 
 @app.route('/get-tiles')

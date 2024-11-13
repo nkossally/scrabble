@@ -229,11 +229,7 @@ const App = () => {
       {isGameOver ? <GameOverModal text={gameOverText} /> : ""}
       <div className="player-row">
         <Hand />
-        <input value={input1} onChange={handleInput1}></input>
-        <input value={input2} onChange={handleInput2}></input>
-        <input value={input3} onChange={handleInput3}></input>
 
-        <button onClick={testBackend}>buttony</button>
         <div>
           <Button
             variant="outlined"
