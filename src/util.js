@@ -774,11 +774,8 @@ export const handleComputerStep = async (
     handleComputerStepOnEmptyBoard(
       boardValues,
       tempBoardValues,
-      computerHand,
-      localDictionary,
       setSelectedComputerTiles,
-      dispatch,
-      lettersLeft,
+      dispatch
     );
     return;
   }
@@ -1032,11 +1029,8 @@ const placeLetterArrAroundCoordinates = (
 const handleComputerStepOnEmptyBoard = async (
   boardValues,
   tempBoardValues,
-  computerHand,
-  localDictionary,
   setSelectedComputerTiles,
   dispatch,
-  lettersLeft,
 ) => {
 
   const resp = await getComputerFirstMove();
