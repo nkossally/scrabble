@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://nkossally.github.io/scrabble/",
-  "proxy": "http://127.0.0.1:5000",
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
@@ -58,5 +57,9 @@
   "devDependencies": {
     "@types/jquery": "^3.5.29",
     "redux-mock-store": "^1.5.4"
+  },
+  "options": {
+    "allowedHosts": ["localhost", ".localhost"],
+    "proxy": "http://127.0.0.1:5000"
   }
 }
