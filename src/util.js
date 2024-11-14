@@ -709,20 +709,12 @@ const calculateScoreFromLetter = (
 };
   
 export const handleComputerStep = async (
-  setInvalidWords,
   dispatch,
-  isComputersTurn,
   setSelectedComputerTiles,
   setIsComputersTurn,
-  localDictionary,
-  computerScore,
-  lettersLeft,
   boardValues,
   tempBoardValues,
-  computerHand,
-  hand,
   setComputerPasses,
-  playerScore,
 ) => {
   const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
 

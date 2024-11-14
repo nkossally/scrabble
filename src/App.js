@@ -140,20 +140,12 @@ const App = () => {
   useEffect(() => {
     if (isComputersTurn) {
       handleComputerStep(
-        setInvalidWords,
         dispatch,
-        isComputersTurn,
         setSelectedComputerTiles,
         setIsComputersTurn,
-        localDictionary,
-        computerScore,
-        lettersLeft,
         boardValues,
         tempBoardValues,
-        computerHand,
-        hand,
         setComputerPasses,
-        playerScore,
       );
     }
   }, [isComputersTurn]);
