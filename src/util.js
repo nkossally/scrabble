@@ -54,32 +54,6 @@ const shuffle = (array) => {
   return array;
 };
 
-const getLongestLetterAndIndexArr = (computerHand, localDictionary) => {
-  let longestLetterAndIndexArr = [];
-  const elemsAndIndices = computerHand.map((letter, idx) => {
-    return { letter, idx };
-  });
-  const helper = (selections, leftovers, node) => {
-    if (node.terminal && selections.length > longestLetterAndIndexArr.length) {
-      longestLetterAndIndexArr = selections;
-    }
-
-    for (let i = 0; i < leftovers.length; i++) {
-      const letter = leftovers[i].letter;
-      if(node.children[letter]){
-        helper(
-          [...selections, leftovers[i]],
-          leftovers.slice(0, i).concat(leftovers.slice(i + 1)),
-          node.children[letter]
-        );
-      }
-    }
-  };
-
-  helper([], elemsAndIndices, localDictionary);
-  return longestLetterAndIndexArr;
-};
-
 const tileScoreIdx = {
   ct: [112],
   tw: [0, 7, 14, 105, 119, 210, 217, 224],
@@ -154,10 +128,8 @@ const handleSetInvalidWords = (text, setInvalidWords) => {
 export const submitWord =
   (
     virtualBoard,
-    indices,
     setInvalidWords,
     dispatch,
-    isComputersTurn,
     setSelectedComputerTiles,
     setIsComputersTurn,
     localDictionary,

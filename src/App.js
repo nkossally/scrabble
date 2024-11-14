@@ -15,7 +15,6 @@ import {
   handleNewGameClick,
   handleDump,
 } from "./util";
-import { setUpGame } from "./api"
 import { Node } from "./dataStructures";
 
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
@@ -229,10 +228,8 @@ const App = () => {
             disabled={isComputersTurn || isGameOver}
             onClick={submitWord(
               undefined,
-              undefined,
               setInvalidWords,
               dispatch,
-              isComputersTurn,
               setSelectedComputerTiles,
               setIsComputersTurn,
               localDictionary,
