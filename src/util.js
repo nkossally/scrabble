@@ -718,9 +718,22 @@ export const handleComputerStep = async (
   const usedLetters = resp["used_letters"];
   const tileBag = resp["tile_bag"];
   const computerWordRack = resp["computer_word_rack"];
+  const oldComputerWordRack = resp["old_computer_word_rack"];
+  console.log("oldComputerWordRack", oldComputerWordRack)
   const isVertical =resp["is_vertical"];
 
   if (row !== undefined) {
+    const indices = [];
+    for(let i = 0; i < word.length; i++){
+      const idx = oldComputerWordRack.indexOf(word[i])
+      indices.push(idx);
+      oldComputerWordRack[idx] = "-";
+    }
+  
+    setSelectedComputerTiles(indices);
+    await delay(1000);
+    setSelectedComputerTiles([]);
+
     let count = 0;
     while (count < word.length) {
       if (!boardValues[row][col]) {
@@ -762,7 +775,7 @@ export const handleComputerStep = async (
     playerScore,
     boardValues,
     tempBoardValues,
-  ); 
+  );
 
   dispatch(modifyComputerHand(computerWordRack));
   dispatch(modifyLettersLeft(tileBag));
@@ -795,22 +808,24 @@ const handleComputerStepOnEmptyBoard = async (
   const resp = await getComputerFirstMove();
   const tileBag = resp['tile_bag'];
   const computerWordRack = resp['computer_word_rack'];
+  const oldComputerWordRack = resp['old_computer_word_rack'];
+  console.log("oldComputerWordRack", oldComputerWordRack)
   const row = resp['row'];
   const col = resp['col'];
   const word = resp['word']
-  // const computerWordRackCpy = [...computerWordRack];
-  // const indices = [];
-  // for(let i = 0; i < word.length; i++){
-  //   const idx = computerWordRackCpy.indexOf(word[i])
-  //   indices.push(idx);
-  //   computerWordRackCpy[i] = "-";
-  // }
+
+  const indices = [];
+  for(let i = 0; i < word.length; i++){
+    const idx = oldComputerWordRack.indexOf(word[i])
+    indices.push(idx);
+    oldComputerWordRack[idx] = "-";
+  }
 
   let wordScore = 0;
   let multiplier = 1;
-  // setSelectedComputerTiles(indices);
-  // await delay(1000);
-  // setSelectedComputerTiles([]);
+  setSelectedComputerTiles(indices);
+  await delay(1000);
+  setSelectedComputerTiles([]);
   for (let j = 0; j < word.length; j++) {
     const letter = word[j];
     const letterScoreObj = calculateScoreFromLetter(
