@@ -145,6 +145,9 @@ const App = () => {
         boardValues,
         tempBoardValues,
         setComputerPasses,
+        localDictionary,
+        computerScore,
+        playerScore
       );
     }
   }, [isComputersTurn]);

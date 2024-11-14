@@ -645,13 +645,3 @@ def play_game():
 
     return score
 
-
-if __name__ == "__main__":
-    random.seed(3)
-    scores = []
-    runs = 1000
-    for _ in range(runs):
-        scores.append(play_game())
-
-    print(sum(scores) / runs)
-    # avg 710.833

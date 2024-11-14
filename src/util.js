@@ -31,8 +31,18 @@ const getIsValidWord = (word, dictionaryTrie) => {
       break;
     }
   }
+  console.log("getIsValidWord", word, i === word.length && curr.terminal )
   return i === word.length && curr.terminal;
 };
+
+const createEmptyBoard = () => {
+  const arr = [];
+  for (let i = 0; i < BOARD_SIZE; i++) {
+    arr.push([]);
+  }
+  return arr;
+};
+
 
 const shuffle = (array) => {
   let currentIndex = array.length,
@@ -240,6 +250,7 @@ const checkAllWordsOnBoard = (
   let rows = rowsAndCols.rows;
   let cols = rowsAndCols.cols;
   let score = 0;
+  console.log("rows", rows, "cols", cols)
 
   let word = "";
   let maxWordLength = 0;
@@ -327,13 +338,16 @@ const checkAllWordsOnBoard = (
         }
       }
     }
-    if (!allWordsInDict) return false;
+    if (!allWordsInDict && !virtualBoard) return false;
+  }
+  const tempLetterArr = getAllTempLetters(virtualBoard, tempBoardValues);
+  const maybeFifty = tempLetterArr.length === 7 ? 50 : 0;
+  if (virtualBoard) {
+    dispatch(updateComputerScore(computerScore + score + maybeFifty));
   }
   // don't submit any one letter words
   if (maxWordLength < 2) return false;
   if (allWordsInDict) {
-    const tempLetterArr = getAllTempLetters(virtualBoard, tempBoardValues);
-    const maybeFifty = tempLetterArr.length === 7 ? 50 : 0;
     if (virtualBoard) {
       dispatch(updateComputerScore(computerScore + score + maybeFifty));
     } else {
@@ -681,6 +695,9 @@ export const handleComputerStep = async (
   boardValues,
   tempBoardValues,
   setComputerPasses,
+  localDictionary,
+  computerScore,
+  playerScore
 ) => {
   const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
 
@@ -728,10 +745,35 @@ export const handleComputerStep = async (
     }, ANIMATION_DURATION);
   }
 
-  let wordScore = 0;
-  let multiplier = 1;
-  row = resp.row;
-  col = resp.col;
+  const virtualBoard = createEmptyBoard();
+  let currRow = resp.row;
+  let currCol = resp.col;
+  let count = 0;
+  while(count < word.length){
+    virtualBoard[currRow][currRow] = word[count];
+    if(isVertical){
+      currRow++
+    } else {
+      currCol++
+    }
+    count++
+  }
+  console.log(virtualBoard)
+
+  checkAllWordsOnBoard(
+    virtualBoard,
+    localDictionary,
+    dispatch,
+    computerScore,
+    playerScore,
+    boardValues,
+    tempBoardValues,
+  );
+
+  // let wordScore = 0;
+  // let multiplier = 1;
+  // row = resp.row;
+  // col = resp.col;
   // setSelectedComputerTiles(indices);
   // await delay(1000);
   // setSelectedComputerTiles([]);
