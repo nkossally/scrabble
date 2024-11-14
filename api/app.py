@@ -124,26 +124,6 @@ def build_dawg(lexicon):
     print(len(minimized_nodes))
     return root
 
-# @app.route('/blarg2', methods = ['POST'])
-# def get_blarg2():
-#     to_load = open("lexicon/blarg.pickle", "rb")
-#     board = pickle.load(to_load)
-#     print(board)
-#     to_load.close()
-
-#     request_data = request.get_json()
-#     row = request_data['row']
-#     col = request_data['col']
-#     letter = request_data['letter']
-
-#     board[row][col] = letter
-
-#     file_handler = open("lexicon/blarg.pickle", "wb")
-#     pickle.dump(board, file_handler)
-#     file_handler.close()
-
-#     return {'hello': board}
-
 @app.route('/start')
 def start_game():
     # build dawg
@@ -223,8 +203,6 @@ def insert_tiles():
 
     request_data = request.get_json()
     tiles = request_data['letters_and_coordinates']
-    print('tiles baby')
-    print(tiles)
     result = game.insert_letters(tiles)
     game.print_board()
     file_handler = open("lexicon/game.pickle", "wb")

@@ -360,20 +360,22 @@ class ScrabbleBoard:
     
     def insert_letters(self, letters_and_coordinates):
         print('letters_and_coordinates')
+        letters = []
         print(letters_and_coordinates)
+        word_rack = self.player_word_rack
         for letter_and_coordinate in letters_and_coordinates:
             letter = letter_and_coordinate['letter']
             row = letter_and_coordinate['row']
             col = letter_and_coordinate['col']
-            print("row")
-            print(row)
-            print("col")
-            print(col)
-            print("letter")
-            print(letter)
             self.board[row][col].letter = letter
+            word_rack.remove(letter)
+            letters.append(letter)
         
-        return {}
+        word_rack, new_letters = refill_word_rack(word_rack, self.tile_bag)
+        [self.tile_bag.remove(letter) for letter in new_letters]
+        self.player_word_rack = word_rack
+
+        return {'player_word_rack': self.player_word_rack, 'tile_bag': self.tile_bag}
 
 
     # method to insert words into board by row and column number

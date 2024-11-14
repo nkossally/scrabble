@@ -144,14 +144,6 @@ export const startGame = async (dispatch, hand, boardValues, tempBoardValues) =>
   dispatch(updateScore(0));
 };
 
-const buildEmptyBoard = () => {
-  const arr = [];
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    arr.push([]);
-  }
-  return arr;
-};
-
 const handleSetInvalidWords = (text, setInvalidWords) => {
   setInvalidWords(text);
   setTimeout(() => {
@@ -409,10 +401,11 @@ const permanentlyPlaceLetters = async (
     }
   }
   const resp = await insertTilesInBackend(lettersAndCoordinates);
+  const playerWordRack = resp["player_word_rack"];
+  const tileBag = resp["tile_bag"];
 
-
-  dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
-  dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
+  dispatch(modifyHand(playerWordRack));
+  dispatch(modifyLettersLeft(tileBag));
 };
 
 const removeAllTempLetters = (
