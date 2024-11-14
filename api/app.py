@@ -6,11 +6,6 @@ import random
 
 app = Flask(__name__)
 
-
-@app.route('/time')
-def get_current_time():
-    return {'time': time.time()}
-
 def build_trie(lexicon):
     num_nodes = 1
     trie = {0: {}}
@@ -129,49 +124,6 @@ def build_dawg(lexicon):
     print(len(minimized_nodes))
     return root
 
-@app.route('/dawg')
-def get_more_time():
-    text_file = open("lexicon/scrabble_words_complete.txt", "r")
-    big_list = text_file.read().splitlines()
-    text_file.close()
-
-    build_trie(big_list)
-    root = build_dawg(big_list)
-    file_handler = open("lexicon/scrabble_words_complete.pickle", "wb")
-    pickle.dump(root, file_handler)
-    file_handler.close()
-    return {'root': "root"}
-
-
-# @app.route('/game')
-# def get_more_timesss():
-#     to_load = open("lexicon/scrabble_words_complete.pickle", "rb")
-#     root = pickle.load(to_load)
-#     game = ScrabbleBoard(root)
-#     to_load.close()
-
-
-#     tile_bag = ["A"] * 9 + ["B"] * 2 + ["C"] * 2 + ["D"] * 4 + ["E"] * 12 + ["F"] * 2 + ["G"] * 3 + \
-#             ["H"] * 2 + ["I"] * 9 + ["J"] * 1 + ["K"] * 1 + ["L"] * 4 + ["M"] * 2 + ["N"] * 6 + \
-#             ["O"] * 8 + ["P"] * 2 + ["Q"] * 1 + ["R"] * 6 + ["S"] * 4 + ["T"] * 6 + ["U"] * 4 + \
-#             ["V"] * 2 + ["W"] * 2 + ["X"] * 1 + ["Y"] * 2 + ["Z"] * 1 + ["%"] * 2
-
-#     word_rack = random.sample(tile_bag, 7)
-#     [tile_bag.remove(letter) for letter in word_rack]
-#     game = ScrabbleBoard(root)
-#     result = game.get_start_move(word_rack)
-#     return result
-
-
-# @app.route('/blarg')
-# def get_blarg():
-#     board = [["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""],["","","","","","","","","","","","","","",""]]
-#     file_handler = open("lexicon/blarg.pickle", "wb")
-#     pickle.dump(board, file_handler)
-#     file_handler.close()
-
-#     return {'hello': board}
-
 # @app.route('/blarg2', methods = ['POST'])
 # def get_blarg2():
 #     to_load = open("lexicon/blarg.pickle", "rb")
@@ -191,8 +143,6 @@ def get_more_time():
 #     file_handler.close()
 
 #     return {'hello': board}
-
-
 
 @app.route('/start')
 def start_game():
@@ -239,8 +189,6 @@ def get_best_move():
     pickle.dump(game, file_handler)
     file_handler.close()
     game.print_board()
-    print("backend result")
-    print(result)
     return result
 
 @app.route('/get-tiles')
@@ -266,3 +214,21 @@ def get_player_hand():
     to_load.close()
     result = game.get_player_hand()
     return {'result': result}
+
+@app.route('/insert-letters', methods = ['POST'])
+def insert_tiles():
+    to_load = open("lexicon/game.pickle", "rb")
+    game = pickle.load(to_load)
+    to_load.close()
+
+    request_data = request.get_json()
+    tiles = request_data['letters_and_coordinates']
+    print('tiles baby')
+    print(tiles)
+    result = game.insert_letters(tiles)
+    game.print_board()
+    file_handler = open("lexicon/game.pickle", "wb")
+    pickle.dump(game, file_handler)
+    file_handler.close()
+
+    return result

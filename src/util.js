@@ -17,7 +17,7 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
-import { setUpGame, getComputerFirstMove, getBestMove } from "./api";
+import { setUpGame, getComputerFirstMove, getBestMove, insertTilesInBackend } from "./api";
 
 const getIsValidWord = (word, dictionaryTrie) => {
   let i = 0;
@@ -160,7 +160,7 @@ const handleSetInvalidWords = (text, setInvalidWords) => {
 };
 
 export const submitWord =
- (
+  (
     virtualBoard,
     indices,
     setInvalidWords,
@@ -175,7 +175,7 @@ export const submitWord =
     lettersLeft,
     hand,
     boardValues,
-    tempBoardValues,
+    tempBoardValues
   ) =>
   async () => {
     dispatch(removeDumpSelections());
@@ -241,46 +241,25 @@ export const submitWord =
       computerScore,
       playerScore,
       boardValues,
-      tempBoardValues,
+      tempBoardValues
     );
 
-    if (isComputersTurn) {
-      if (allWordsInDict) {
-        setSelectedComputerTiles(indices);
-        await delay(1000);
-        permanentlyPlaceLetters(
-          virtualBoard,
-          computerHand,
-          dispatch,
-          lettersLeft,
-          hand,
-          tempBoardValues
-        );
-        dispatch(setIsComputersTurn(false));
-        setSelectedComputerTiles([]);
-        return true;
-      } else {
-        dispatch(setIsComputersTurn(false));
-        return false;
-      }
+    if (allWordsInDict) {
+      permanentlyPlaceLetters(
+        virtualBoard,
+        computerHand,
+        dispatch,
+        lettersLeft,
+        hand,
+        tempBoardValues
+      );
+      await delay(100);
+      dispatch(setIsComputersTurn(true));
     } else {
-      if (allWordsInDict) {
-         permanentlyPlaceLetters(
-          virtualBoard,
-          computerHand,
-          dispatch,
-          lettersLeft,
-          hand,
-          tempBoardValues
-        );
-        await delay(100);
-        dispatch(setIsComputersTurn(true));
-      } else {
-        handleSetInvalidWords(
-          "Word(s) not found in dictionary.",
-          setInvalidWords
-        );
-      }
+      handleSetInvalidWords(
+        "Word(s) not found in dictionary.",
+        setInvalidWords
+      );
     }
   };
 
@@ -291,7 +270,7 @@ const checkAllWordsOnBoard = (
   computerScore,
   playerScore,
   boardValues,
-  tempBoardValues,
+  tempBoardValues
 ) => {
   const rowsAndCols = getPlacedLettersRowsAndCols(
     virtualBoard,
@@ -312,7 +291,7 @@ const checkAllWordsOnBoard = (
       col,
       virtualBoard,
       boardValues,
-      tempBoardValues,
+      tempBoardValues
     );
     word = wordAndScore.word;
     maxWordLength = Math.max(maxWordLength, word.length);
@@ -329,7 +308,7 @@ const checkAllWordsOnBoard = (
         col,
         virtualBoard,
         boardValues,
-        tempBoardValues,
+        tempBoardValues
       );
       if (wordAndScore) {
         const word = wordAndScore.word;
@@ -345,7 +324,6 @@ const checkAllWordsOnBoard = (
       }
     }
     if (!allWordsInDict) return false;
-
   } else {
     // word is horizontal
     const row = rows[0];
@@ -354,7 +332,7 @@ const checkAllWordsOnBoard = (
       cols[0],
       virtualBoard,
       boardValues,
-      tempBoardValues,
+      tempBoardValues
     );
     word = wordAndScore.word;
     maxWordLength = Math.max(maxWordLength, word.length);
@@ -373,7 +351,7 @@ const checkAllWordsOnBoard = (
         col,
         virtualBoard,
         boardValues,
-        tempBoardValues,
+        tempBoardValues
       );
       if (wordAndScore) {
         const word = wordAndScore.word;
@@ -381,10 +359,10 @@ const checkAllWordsOnBoard = (
         if (word.length > 1) {
           const isValidWord = getIsValidWord(word, localDictionary);
           score += wordAndScore.wordScore;
-          if (!isValidWord){
+          if (!isValidWord) {
             allWordsInDict = false;
             break;
-          } 
+          }
         }
       }
     }
@@ -405,7 +383,7 @@ const checkAllWordsOnBoard = (
   return true;
 };
 
-const permanentlyPlaceLetters = (
+const permanentlyPlaceLetters = async (
   virtualBoard,
   computerHand,
   dispatch,
@@ -416,39 +394,24 @@ const permanentlyPlaceLetters = (
   let wordSoFar = "";
   let letterCount = 0;
   const computerHandCopy = Array.from(computerHand);
+  const lettersAndCoordinates = [];
   for (let i = 0; i < BOARD_SIZE; i++) {
     for (let j = 0; j < BOARD_SIZE; j++) {
       let letter =
-        getTempLetterAtCoordinate(i, j, tempBoardValues) ||
-        getTempLetterOnVirtualBoard(i, j, virtualBoard);
+        getTempLetterAtCoordinate(i, j, tempBoardValues)
       if (letter) {
         wordSoFar += letter;
         dispatch(addLetterToBoard({ row: i, col: j, letter }));
         letterCount++;
-        if (virtualBoard) {
-          const k = computerHandCopy.indexOf(letter);
-          computerHandCopy.splice(k, 1);
-          dispatch(
-            modifyComputerHand(
-              computerHand.slice(0, k).concat(computerHand.slice(k + 1))
-            )
-          );
-        } else {
-          dispatch(removeTempLetterFromBoard({ row: i, col: j }));
-        }
+        dispatch(removeTempLetterFromBoard({ row: i, col: j }));
+        lettersAndCoordinates.push({letter, row: i, col: j})
       }
     }
   }
+  const resp = await insertTilesInBackend(lettersAndCoordinates);
 
-  if (virtualBoard) {
-    dispatch(
-      modifyComputerHand(
-        computerHandCopy.concat(lettersLeft.slice(0, letterCount))
-      )
-    );
-  } else {
-    dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
-  }
+
+  dispatch(modifyHand(hand.concat(lettersLeft.slice(0, letterCount))));
   dispatch(modifyLettersLeft(lettersLeft.slice(letterCount)));
 };
 
@@ -779,6 +742,8 @@ export const handleComputerStep = async (
     );
     return;
   }
+  await delay(500);
+
 
   const resp = await getBestMove();
   console.log("resp", resp)

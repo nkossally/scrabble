@@ -22,4 +22,19 @@ export const getBestMove = async () => {
       return json;
     } catch {}
   };
-  
+
+  export const insertTilesInBackend = async (lettersAndCoordinates) => {
+    console.log("insertTilesInBackend")
+    try {
+      const resp = await fetch("/insert-letters", {
+        method: "POST",
+        body: JSON.stringify({letters_and_coordinates: lettersAndCoordinates}),
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+      const json = await resp.json();
+      console.log("resp in fetch", json);
+      return json;
+    } catch {}
+  };

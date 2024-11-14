@@ -358,8 +358,23 @@ class ScrabbleBoard:
             print()
         print()
     
-    def insert_letter(self, row, col, letter):
-        self.board[row][col].letter = letter
+    def insert_letters(self, letters_and_coordinates):
+        print('letters_and_coordinates')
+        print(letters_and_coordinates)
+        for letter_and_coordinate in letters_and_coordinates:
+            letter = letter_and_coordinate['letter']
+            row = letter_and_coordinate['row']
+            col = letter_and_coordinate['col']
+            print("row")
+            print(row)
+            print("col")
+            print(col)
+            print("letter")
+            print(letter)
+            self.board[row][col].letter = letter
+        
+        return {}
+
 
     # method to insert words into board by row and column number
     # using 1-based indexing for user input
@@ -408,9 +423,6 @@ class ScrabbleBoard:
                     self.lower_cross_check.append((self.board[row + 1][curr_col], letter, row, curr_col))
 
                 curr_col += 1
-            print("inserted")
-            print(self.board[row][curr_col].letter)
-
 
         # place 0 cross-check sentinel at the beginning and end of inserted words to stop accidental overlap.
         # sentinels should only be for the board state opposite from the one the board is currently in
