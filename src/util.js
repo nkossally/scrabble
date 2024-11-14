@@ -210,11 +210,8 @@ export const submitWord =
 
     if (allWordsInDict) {
       permanentlyPlaceLetters(
-        virtualBoard,
         computerHand,
         dispatch,
-        lettersLeft,
-        hand,
         tempBoardValues
       );
       await delay(100);
@@ -348,11 +345,8 @@ const checkAllWordsOnBoard = (
 };
 
 const permanentlyPlaceLetters = async (
-  virtualBoard,
   computerHand,
   dispatch,
-  lettersLeft,
-  hand,
   tempBoardValues
 ) => {
   let wordSoFar = "";
