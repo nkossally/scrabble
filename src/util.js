@@ -17,7 +17,7 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
-import { setUpGame, getComputerFirstMove, getBestMove, insertTilesInBackend } from "./api";
+import { setUpGame, getComputerFirstMove, getBestMove, insertTilesInBackend, dumpLetters } from "./api";
 
 const getIsValidWord = (word, dictionaryTrie) => {
   let i = 0;
@@ -31,7 +31,6 @@ const getIsValidWord = (word, dictionaryTrie) => {
       break;
     }
   }
-  console.log("getIsValidWord", word, i === word.length && curr.terminal )
   return i === word.length && curr.terminal;
 };
 
@@ -250,7 +249,6 @@ const checkAllWordsOnBoard = (
   let rows = rowsAndCols.rows;
   let cols = rowsAndCols.cols;
   let score = 0;
-  console.log("rows", rows, "cols", cols)
 
   let word = "";
   let maxWordLength = 0;
@@ -420,8 +418,6 @@ const removeAllLetters = (dispatch, boardValues) => {
 };
 
 const getPlacedLettersRowsAndCols = (virtualBoard, tempBoardValues) => {
-  console.log("getPlacedLettersRowsAndCols")
-  console.log("virtualBoard", virtualBoard)
   const rows = new Set();
   const cols = new Set();
   for (let i = 0; i < BOARD_SIZE; i++) {
@@ -716,7 +712,6 @@ export const handleComputerStep = async (
 
 
   const resp = await getBestMove();
-  console.log("resp", resp)
   let row = resp["row"];
   let col = resp["col"];
   const word = resp["word"];
@@ -724,7 +719,6 @@ export const handleComputerStep = async (
   const tileBag = resp["tile_bag"];
   const computerWordRack = resp["computer_word_rack"];
   const isVertical =resp["is_vertical"];
-  console.log(row, col, word, usedLetters, tileBag, computerWordRack);
 
   if (row !== undefined) {
     let count = 0;
@@ -759,7 +753,6 @@ export const handleComputerStep = async (
     }
     count++
   }
-  console.log(virtualBoard)
 
   checkAllWordsOnBoard(
     virtualBoard,
@@ -800,7 +793,6 @@ const handleComputerStepOnEmptyBoard = async (
 ) => {
 
   const resp = await getComputerFirstMove();
-  console.log("resp", resp)
   const tileBag = resp['tile_bag'];
   const computerWordRack = resp['computer_word_rack'];
   const row = resp['row'];
@@ -890,37 +882,31 @@ export const handleDump =
     selectedForDumpingHandIndices,
     lettersLeft
   ) =>
-  () => {
+  async () => {
     const dumpNum = selectedForDumpingHandIndices.length;
     if (dumpNum > 0) {
-      let newHand = [];
-      for (let i = 0; i < 15; i++) {
-        for (let j = 0; j < 15; j++) {
-          if (tempBoardValues[i][j]) {
-            newHand.push(tempBoardValues[i][j]);
-          }
-        }
-      }
+
       const dumpedLetters = [];
       for (let i = 0; i < 7; i++) {
         if (selectedForDumpingHandIndices.includes(i)) {
           dumpedLetters.push(hand[i]);
-        } else if (hand[i]) {
-          newHand.push(hand[i]);
         }
       }
-      newHand = newHand.concat(lettersLeft.slice(0, dumpNum));
-      const newLettersLeft = shuffle(
-        lettersLeft.slice(dumpNum).concat(dumpedLetters)
-      );
+      const resp = await dumpLetters(dumpedLetters);
+      console.log(resp)
+      const tileBag = resp["tile_bag"];
+      const playerWordRack = resp["player_word_rack"];
+      console.log("tileBag",tileBag )
+      console.log("playerWordRack",playerWordRack )
+
       removeAllTempLetters(
         /** putBackInHand */ false,
         dispatch,
         hand,
         tempBoardValues
       );
-      dispatch(modifyHand(newHand));
-      dispatch(modifyLettersLeft(newLettersLeft));
+      dispatch(modifyHand(playerWordRack));
+      dispatch(modifyLettersLeft(tileBag));
       dispatch(removeDumpSelections());
       setTimeout(() => {
         dispatch(setIsComputersTurn(true));

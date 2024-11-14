@@ -378,6 +378,15 @@ class ScrabbleBoard:
         return {'player_word_rack': self.player_word_rack, 'tile_bag': self.tile_bag}
 
 
+    def dump_letters(self, letters):
+        word_rack = self.player_word_rack
+        [word_rack.remove(letter) for letter in letters]
+        [self.tile_bag.append(letter) for letter in letters]
+        word_rack, new_letters = refill_word_rack(word_rack, self.tile_bag)
+        [self.tile_bag.remove(letter) for letter in new_letters]
+        self.player_word_rack = word_rack
+        return {'player_word_rack': self.player_word_rack, 'tile_bag': self.tile_bag}
+
     # method to insert words into board by row and column number
     # using 1-based indexing for user input
     def insert_word(self, row, col, word):

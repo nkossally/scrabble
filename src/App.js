@@ -53,6 +53,7 @@ const App = () => {
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
   const hand = useSelector((state) => state.hand);
+  console.log("hand", hand)
   const computerHand = useSelector((state) => state.computerHand);
   const playerScore = useSelector((state) => state.score);
   const computerScore = useSelector((state) => state.computerScore);

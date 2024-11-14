@@ -38,3 +38,18 @@ export const getBestMove = async () => {
       return json;
     } catch {}
   };
+
+  export const dumpLetters = async (letters) => {
+    try {
+      const resp = await fetch("/dump-letters", {
+        method: "POST",
+        body: JSON.stringify({letters}),
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+      const json = await resp.json();
+      console.log("resp in fetch", json);
+      return json;
+    } catch {}
+  };
