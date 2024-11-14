@@ -420,6 +420,8 @@ const removeAllLetters = (dispatch, boardValues) => {
 };
 
 const getPlacedLettersRowsAndCols = (virtualBoard, tempBoardValues) => {
+  console.log("getPlacedLettersRowsAndCols")
+  console.log("virtualBoard", virtualBoard)
   const rows = new Set();
   const cols = new Set();
   for (let i = 0; i < BOARD_SIZE; i++) {
@@ -724,7 +726,6 @@ export const handleComputerStep = async (
   const isVertical =resp["is_vertical"];
   console.log(row, col, word, usedLetters, tileBag, computerWordRack);
 
-
   if (row !== undefined) {
     let count = 0;
     while (count < word.length) {
@@ -750,7 +751,7 @@ export const handleComputerStep = async (
   let currCol = resp.col;
   let count = 0;
   while(count < word.length){
-    virtualBoard[currRow][currRow] = word[count];
+    if(!boardValues[currRow][currCol]) virtualBoard[currRow][currCol] = word[count];
     if(isVertical){
       currRow++
     } else {
@@ -768,39 +769,7 @@ export const handleComputerStep = async (
     playerScore,
     boardValues,
     tempBoardValues,
-  );
-
-  // let wordScore = 0;
-  // let multiplier = 1;
-  // row = resp.row;
-  // col = resp.col;
-  // setSelectedComputerTiles(indices);
-  // await delay(1000);
-  // setSelectedComputerTiles([]);
-  // for (let j = 0; j < word.length; j++) {
-  //   const letter = word[j];
-  //   const letterScoreObj = calculateScoreFromLetter(
-  //     row + j,
-  //     MID_IDX /* middle column */,
-  //     null,
-  //     letter,
-  //     boardValues,
-  //     tempBoardValues,
-  //   );
-  //   wordScore += letterScoreObj.letterPoints;
-  //   multiplier *= letterScoreObj.wordMultiplier;
-
-  //   dispatch(
-  //     addLetterToBoard({
-  //       row: row + j,
-  //       col: 7,
-  //       letter,
-  //     })
-  //   );
-  // }
-  // wordScore *= multiplier;
-  // const maybeFifty = word.length === 7 ? 50 : 0;
-  // dispatch(updateComputerScore(wordScore + maybeFifty));  
+  ); 
 
   dispatch(modifyComputerHand(computerWordRack));
   dispatch(modifyLettersLeft(tileBag));
