@@ -883,7 +883,7 @@ export const handleNewGameClick =
     setIsGameOver
   ) =>
   () => {
-    setGameStarted(false);
+    setGameStarted(true);
     setIsGameOver(false);
     dispatch(removeDumpSelections());
     startGame(dispatch, hand, boardValues, tempBoardValues);

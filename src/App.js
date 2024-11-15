@@ -53,30 +53,13 @@ const App = () => {
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
   const hand = useSelector((state) => state.hand);
-  console.log("hand", hand)
   const computerHand = useSelector((state) => state.computerHand);
   const playerScore = useSelector((state) => state.score);
   const computerScore = useSelector((state) => state.computerScore);
   const isComputersTurn = useSelector((state) => state.isComputersTurn);
   const selectedForDumpingHandIndices = useSelector(
     (state) => state.selectedForDumpingHandIndices
-  );
-  const [input1, setInput1] = useState(0)
-  const [input2, setInput2] = useState(0)
-  const [input3, setInput3] = useState("")
-
-  const handleInput1 = e =>{
-    const val = e.target.value
-    setInput1(val[val.length - 1])
-  }
-  const handleInput2 = e =>{
-    const val = e.target.value
-    setInput2(val[val.length - 1])
-  }
-  const handleInput3 = e =>{
-    const val = e.target.value
-    setInput3(val[val.length - 1])
-  }
+)
 
   const dispatch = useDispatch();
 
@@ -161,41 +144,7 @@ const App = () => {
   } else {
     gameOverText = "It's a tie";
   }
-  
-  const testBackend = async () =>{
-    // const resp = await fetch("/time");
-    // const json = await resp.json()
-    // console.log( json)
-    const resp2= await fetch("/start");
-    const json2= await resp2.json()
-    console.log( json2)
 
-    // const resp3= await fetch("/get-computer-first-move");
-    // const json3= await resp3.json()
-    // console.log( json3)
-    const resp4= await fetch("/get-tiles");
-    const json4= await resp4.json()
-    console.log( json4)
-    const resp6= await fetch("/get-computer-hand");
-    const json6= await resp6.json()
-    console.log( json6)
-    const resp7= await fetch("/get-player-hand");
-    const json7= await resp7.json()
-    console.log( json7)
-    // const resp5 = await fetch("/blarg2", {
-    //   method: "POST",
-    //   body: JSON.stringify({row: 1, col: 1, letter: "A"}),
-    // });
-    // const resp5 = await fetch("/blarg2", {
-    //   method: "POST",
-    //   body: JSON.stringify({row: parseInt(input1), col: parseInt(input2), letter: input3}),
-    //   headers:{
-    //     "Content-Type": "application/json"
-    //   }
-    // });
-    // const json5= await resp5.json()
-    // console.log( json5)
-  }
 
   return (
     <div className="App">
