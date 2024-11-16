@@ -17,6 +17,7 @@ import {
 } from "./reducers/boardValuesSlice";
 import { removeTempLetterFromBoard } from "./reducers/tempBoardValuesSlice";
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
+import { setRedisKey } from "./reducers/redisKeySlice";
 import { setUpGame, getComputerFirstMove, getBestMove, insertTilesInBackend, dumpLetters } from "./api";
 
 const getIsValidWord = (word, dictionaryTrie) => {
@@ -116,6 +117,8 @@ export const startGame = async (dispatch, hand, boardValues, tempBoardValues) =>
   const tiles = resp["tiles"]
   const computerHand = resp["computer_hand"]
   const playerHand = resp["player_hand"]
+  const key = resp["key"]
+  console.log("redis key", key)
 
   removeAllTempLetters(
     /** putBackInHand */ false,
@@ -129,6 +132,7 @@ export const startGame = async (dispatch, hand, boardValues, tempBoardValues) =>
   dispatch(modifyLettersLeft(tiles));
   dispatch(updateComputerScore(0));
   dispatch(updateScore(0));
+  dispatch(setRedisKey(key))
 };
 
 const handleSetInvalidWords = (text, setInvalidWords) => {
@@ -152,7 +156,8 @@ export const submitWord =
     lettersLeft,
     hand,
     boardValues,
-    tempBoardValues
+    tempBoardValues,
+    key
   ) =>
   async () => {
     dispatch(removeDumpSelections());
@@ -225,7 +230,8 @@ export const submitWord =
       await permanentlyPlaceLetters(
         computerHand,
         dispatch,
-        tempBoardValues
+        tempBoardValues,
+        key
       );
       dispatch(setIsComputersTurn(true));
     } else {
@@ -362,7 +368,8 @@ const checkAllWordsOnBoard = (
 const permanentlyPlaceLetters = async (
   computerHand,
   dispatch,
-  tempBoardValues
+  tempBoardValues,
+  key
 ) => {
   let wordSoFar = "";
   let letterCount = 0;
@@ -381,7 +388,7 @@ const permanentlyPlaceLetters = async (
       }
     }
   }
-  const resp = await insertTilesInBackend(lettersAndCoordinates);
+  const resp = await insertTilesInBackend(lettersAndCoordinates, key);
   if (!resp) {
     console.log("no response");
     return;
@@ -702,7 +709,8 @@ export const handleComputerStep = async (
   setComputerPasses,
   localDictionary,
   computerScore,
-  playerScore
+  playerScore,
+  key
 ) => {
   const lettersOnBoard = getPermanentlyPlacedLetters(boardValues);
 
@@ -711,7 +719,8 @@ export const handleComputerStep = async (
       boardValues,
       tempBoardValues,
       setSelectedComputerTiles,
-      dispatch
+      dispatch,
+      key
     );
     return;
   }
@@ -719,7 +728,7 @@ export const handleComputerStep = async (
   // before tiles inserted by the player are persisted to and retrieved from Redis. Fix later.
   await delay(500);
 
-  const resp = await getBestMove();
+  const resp = await getBestMove(key);
   if (!resp) {
     console.log("no response");
     return;
@@ -815,9 +824,10 @@ const handleComputerStepOnEmptyBoard = async (
   tempBoardValues,
   setSelectedComputerTiles,
   dispatch,
+  key
 ) => {
 
-  const resp = await getComputerFirstMove();
+  const resp = await getComputerFirstMove(key);
   if (!resp) {
     console.log("no response");
     return;
@@ -911,7 +921,8 @@ export const handleDump =
     hand,
     tempBoardValues,
     selectedForDumpingHandIndices,
-    lettersLeft
+    lettersLeft,
+    key
   ) =>
   async () => {
     const dumpNum = selectedForDumpingHandIndices.length;
@@ -923,7 +934,7 @@ export const handleDump =
           dumpedLetters.push(hand[i]);
         }
       }
-      const resp = await dumpLetters(dumpedLetters);
+      const resp = await dumpLetters(dumpedLetters, key);
       if (!resp) {
         console.log("no response");
         return;

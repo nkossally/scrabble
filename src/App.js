@@ -50,6 +50,7 @@ const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [invalidWords, setInvalidWords] = useState(false);
   const [computerPasses, setComputerPasses] = useState(false);
+  const redisKey = useSelector((state) => state.redisKey);
   const boardValues = useSelector((state) => state.boardValues);
   const tempBoardValues = useSelector((state) => state.tempBoardValues);
   const lettersLeft = useSelector((state) => state.lettersLeft);
@@ -132,7 +133,8 @@ const App = () => {
         setComputerPasses,
         localDictionary,
         computerScore,
-        playerScore
+        playerScore,
+        redisKey
       );
     }
   }, [isComputersTurn]);
@@ -194,6 +196,7 @@ const App = () => {
               hand,
               boardValues,
               tempBoardValues,
+              redisKey
             )}
           >
             {" "}
@@ -208,7 +211,8 @@ const App = () => {
               hand,
               tempBoardValues,
               selectedForDumpingHandIndices,
-              lettersLeft
+              lettersLeft,
+              redisKey
             )}
           >
             {" "}

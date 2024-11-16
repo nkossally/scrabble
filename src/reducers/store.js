@@ -10,19 +10,21 @@ import scoreSliceReducer from "./scoreSlice";
 import computerScoreSliceReducer from "./computerScoreSlice";
 import isComputersTurnSliceReducer from "./isComputersTurn.slice";
 import selectedForDumpingHandIndicesReducer from "./selectedForDumpingHandIndicesSlice";
+import redisKeyReducer from "./redisKeySlice";
 
 const persistConfig = {
   key: "root",
   storage,
   safelist: [
-    "boardValues",
-    "tempBoardValues",
-    "hand",
-    "computerHand",
-    "lettersLeft",
-    "score",
-    "computerScore",
-    "isComputersTurn",
+    // "boardValues",
+    // "tempBoardValues",
+    // "hand",
+    // "computerHand",
+    // "lettersLeft",
+    // "score",
+    // "computerScore",
+    // "isComputersTurn",
+    // "redisKey"
   ],
 };
 
@@ -36,6 +38,7 @@ const rootReducer = combineReducers({
   computerScore: computerScoreSliceReducer,
   isComputersTurn: isComputersTurnSliceReducer,
   selectedForDumpingHandIndices: selectedForDumpingHandIndicesReducer,
+  redisKey: redisKeyReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
