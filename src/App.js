@@ -15,6 +15,7 @@ import {
   handleNewGameClick,
   handleDump,
 } from "./util";
+import { testSetDawg, testGetDawg} from "./api"
 import { Node } from "./dataStructures";
 
 import { setIsComputersTurn } from "./reducers/isComputersTurn.slice";
