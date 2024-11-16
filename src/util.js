@@ -222,12 +222,11 @@ export const submitWord =
     );
 
     if (allWordsInDict) {
-      permanentlyPlaceLetters(
+      await permanentlyPlaceLetters(
         computerHand,
         dispatch,
         tempBoardValues
       );
-      await delay(100);
       dispatch(setIsComputersTurn(true));
     } else {
       handleSetInvalidWords(
@@ -716,8 +715,9 @@ export const handleComputerStep = async (
     );
     return;
   }
+  // TODO: Without the delay below, race conditions can occur in which the computer move happens
+  // before tiles inserted by the player are persisted to and retrieved from Redis. Fix later.
   await delay(500);
-
 
   const resp = await getBestMove();
   if (!resp) {
