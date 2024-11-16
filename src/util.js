@@ -109,6 +109,10 @@ export const pass =
 
 export const startGame = async (dispatch, hand, boardValues, tempBoardValues) => {
   const resp = await setUpGame();
+  if (!resp) {
+    console.log("no response");
+    return;
+  }
   const tiles = resp["tiles"]
   const computerHand = resp["computer_hand"]
   const playerHand = resp["player_hand"]
@@ -379,6 +383,10 @@ const permanentlyPlaceLetters = async (
     }
   }
   const resp = await insertTilesInBackend(lettersAndCoordinates);
+  if (!resp) {
+    console.log("no response");
+    return;
+  }
   const playerWordRack = resp["player_word_rack"];
   const tileBag = resp["tile_bag"];
 
@@ -712,6 +720,10 @@ export const handleComputerStep = async (
 
 
   const resp = await getBestMove();
+  if (!resp) {
+    console.log("no response");
+    return;
+  }
   let row = resp["row"];
   let col = resp["col"];
   const word = resp["word"];
@@ -806,6 +818,10 @@ const handleComputerStepOnEmptyBoard = async (
 ) => {
 
   const resp = await getComputerFirstMove();
+  if (!resp) {
+    console.log("no response");
+    return;
+  }
   const tileBag = resp['tile_bag'];
   const computerWordRack = resp['computer_word_rack'];
   const oldComputerWordRack = resp['old_computer_word_rack'];
@@ -908,6 +924,10 @@ export const handleDump =
         }
       }
       const resp = await dumpLetters(dumpedLetters);
+      if (!resp) {
+        console.log("no response");
+        return;
+      }
       console.log(resp)
       const tileBag = resp["tile_bag"];
       const playerWordRack = resp["player_word_rack"];
